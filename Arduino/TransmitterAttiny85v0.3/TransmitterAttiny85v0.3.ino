@@ -136,8 +136,8 @@ void setup()
 
 #ifdef ENABLE_BUTTON_CONFIGURATION
   transponder_id = EEPROMReadInt(0);
-  if (transponder_id == 0) {
-    transponder_id = 1;
+  if (transponder_id == 0 || transponder_id == 0xFF) { //EEPROM was erased or new chip (default from factory eeprom "should" be 0xFF)
+    transponder_id = TRANSPONDER_ID; //copy from TRANSPONDER_ID default instead of using ID 1
     EEPROMWriteInt(0, transponder_id);
   }
 
