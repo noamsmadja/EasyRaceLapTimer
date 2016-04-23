@@ -92,7 +92,8 @@ void readConfigButtonState() {
     digitalWrite(STATUS_LED_PIN, HIGH);
     encodeIdToBuffer();
     sei();
-    
+    delay(1000);
+    digitalWrite(STATUS_LED_PIN, LOW); // turn LED off before flashing the transponder ID
     delay(200);
     flashTransponderId();
 
