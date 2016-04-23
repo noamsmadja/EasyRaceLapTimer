@@ -268,21 +268,21 @@ void flashTransponderId() {
   //Display Transponder ID in two sets of LED Flashes
   for (int i = 0; i < transponder_id / 10; i++) { //Display MSB
     digitalWrite(STATUS_LED_PIN, HIGH);
-    delay(150);
+    delay(300);
     digitalWrite(STATUS_LED_PIN, LOW);
-    delay(150);
+    delay(300);
   }
   //Display a single LED Flash to seperate the bits (helps distinguish ID 1 and ID 10)
-  delay(150);
+  delay(300);
   digitalWrite(STATUS_LED_PIN, HIGH);
   delay(50);
   digitalWrite(STATUS_LED_PIN, LOW);
-  delay(250);
+  delay(600);
 
   for (int i = 0; i < transponder_id % 10; i++) { //Display LSB
     digitalWrite(STATUS_LED_PIN, HIGH);
-    delay(150);
+    delay(300);
     digitalWrite(STATUS_LED_PIN, LOW);
-    delay(150);
+    delay(300);
   }
 }
