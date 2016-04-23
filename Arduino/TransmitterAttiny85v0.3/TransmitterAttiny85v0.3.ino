@@ -265,12 +265,8 @@ unsigned int EEPROMReadInt(int p_address)
 }
 
 void flashTransponderId() {
-  int fn = abs(transponder_id); //better way to find first digit of trasnponder_id
-  while (fn >= 10)
-    fn /= 10;
-
   //Display Transponder ID in two sets of LED Flashes
-  for (int i = 0; i < fn; i++) { //Display MSB
+  for (int i = 0; i < transponder_id / 10; i++) { //Display MSB
     digitalWrite(STATUS_LED_PIN, HIGH);
     delay(150);
     digitalWrite(STATUS_LED_PIN, LOW);
