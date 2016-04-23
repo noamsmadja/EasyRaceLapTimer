@@ -61,52 +61,51 @@ void encodeIdToBuffer() {
   buffer[8] = control_bit();
 }
 
-void readConfigButtonState() {
-  if (ledBlinkStartTime != 0) {
-    return;
-  }
-
-  int state = digitalRead(BUTTON_PIN);
-  if (state == LOW) {
-    if (state != buttonState) {
-      buttonState = state;
-      buttonPushTime = millis();
+void idSetupMode(){
+    digitalWrite(STATUS_LED_PIN, HIGH); // led on while pressing button
+    while (digitalRead(BUTTON_PIN) == LOW){ // wait for button to be released
+     delay(1); 
     }
-  } else {
-    buttonPushTime = millis();
-  }
-
-  buttonState = state;
-
-  if (buttonPushTime + BUTTON_INC_ID_PUSH_TIME <= millis()) {
-    transponder_id += 1;
-    if (transponder_id > 63) {
-      transponder_id = 1;
+    digitalWrite(STATUS_LED_PIN, LOW); // turn led off, now in setup mode
+    delay(1000);
+    digitalWrite(STATUS_LED_PIN, HIGH);
+    delay(1000);
+    digitalWrite(STATUS_LED_PIN, LOW);
+    int msb = 0;
+    int lsb = 0;
+    buttonState = HIGH;
+    int state = HIGH;
+    for (int i = 0 ; i <= 2 ; i++){
+      while (i == 0 || i == 2){ // MSB: i=0, LSB: i=2
+        digitalWrite(STATUS_LED_PIN, HIGH);
+          delay(50);
+         digitalWrite(STATUS_LED_PIN, LOW);
+          delay(50);
+        state = digitalRead(BUTTON_PIN);
+        if (state == LOW) { // is button pressed?
+          if (state != buttonState){ // button state changed
+            buttonState = state;
+            buttonPushTime = millis();
+          }
+        } else { //button not pressed
+          if (state != buttonState){ //button was pressed
+          buttonState=state;
+            if (buttonPushTime + BUTTON_INC_ID_PUSH_TIME <= millis()) { //if long press move to LSB
+              i++;
+            } else { //if short press count for ID bit
+              (i==0) ? msb+=1:lsb+=1;
+            }
+          }     
+        } //if (state == LOW)
+      } // while (i == 0){
+    } //for (int i = 0 ; i <= 2 ; i++){
+    
+    
+    transponder_id = msb*10+lsb;
+    if (transponder_id > 63 ) {
+      transponder_id=63;
     }
     EEPROMWriteInt(0, transponder_id);
-    ir_pulse_off();
-    cli();
-    buttonState = HIGH; // RESET
-    buttonPushTime = millis(); // RESET
-    ledBlinkStartTime = millis(); // Enable confirmation LED
-    digitalWrite(STATUS_LED_PIN, HIGH);
-    encodeIdToBuffer();
-    sei();
-    delay(1000);
-    digitalWrite(STATUS_LED_PIN, LOW); // turn LED off before flashing the transponder ID
-    delay(200);
-    flashTransponderId();
-
-  }
-}
-
-
-void updateConfirmationLed() {
-  if (ledBlinkStartTime != 0 && ledBlinkStartTime + LED_BLINK_CONFIRM_TIME <= millis()) {
-    digitalWrite(STATUS_LED_PIN, LOW);
-    ledBlinkStartTime = 0;
-  }
-
 }
 
 unsigned int get_pulse_width_for_buffer(int bit) {
@@ -134,19 +133,23 @@ void setup()
     EEPROM.write(i, 0);
   }
 #endif
-
-#ifdef ENABLE_BUTTON_CONFIGURATION
-  transponder_id = EEPROMReadInt(0);
-  if (transponder_id == 0 || transponder_id == 0xFF) { //EEPROM was erased or new chip (default from factory eeprom "should" be 0xFF)
-    transponder_id = TRANSPONDER_ID; //copy from TRANSPONDER_ID default instead of using ID 1
-    EEPROMWriteInt(0, transponder_id);
-  }
-
+  
   // put your setup code here, to run once:
   pinMode(STATUS_LED_PIN, OUTPUT);
   // initialize the pushbutton pin as an input:
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   PORTB |= (1 << BUTTON_PIN);    // enable pull-up resistor
+
+#ifdef ENABLE_BUTTON_CONFIGURATION
+if (digitalRead(BUTTON_PIN) == LOW) { // if button pressed on start up, enter ID setup mode
+  idSetupMode();
+} else {
+  transponder_id = EEPROMReadInt(0);
+  if (transponder_id == 0 || transponder_id == 0xFF) { //EEPROM was erased or new chip (default from factory eeprom "should" be 0xFF)
+    transponder_id = TRANSPONDER_ID; //copy from TRANSPONDER_ID default instead of using ID 1
+    EEPROMWriteInt(0, transponder_id);
+  }
+}
 
   flashTransponderId();
 
@@ -242,8 +245,9 @@ void loop() {
   } // 3 times
 
 #ifdef ENABLE_BUTTON_CONFIGURATION
-  readConfigButtonState();
-  updateConfirmationLed();
+if (digitalRead(BUTTON_PIN) == LOW) { 
+  flashTransponderId();
+}
 #endif
 } // end of main loop
 
