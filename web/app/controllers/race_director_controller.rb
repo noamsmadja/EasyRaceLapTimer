@@ -28,4 +28,9 @@ class RaceDirectorController < ApplicationController
     @current_race_session_adapter = RaceSessionAdapter.new(@current_race_session) if @current_race_session
     render layout: false
   end
+  
+    def all_laps
+  	@alllaps = PilotRaceLap.joins('LEFT OUTER JOIN pilots ON pilots.id = pilot_race_laps.pilot_id').order("ID DESC").limit(params[:num])
+  end
+
 end
