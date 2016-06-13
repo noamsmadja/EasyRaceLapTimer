@@ -28,6 +28,13 @@
 .row
   .col-xs-12
     %h2
+      Last 10 Laps
+    #lap10_overview
+      -#= render partial: 'all_laps'
+
+.row
+  .col-xs-12
+    %h2
       Soundeffects
     - @custom_soundfiles.each do |soundfile|
       =link_to(url_for(action: 'play_custom', controller: 'api/v1/sound', id: soundfile.id),{remote: true, class: 'btn btn-primary'}) do
@@ -46,6 +53,11 @@
     $.get( "/race_director/lap_times", function( data ) {
       $("#lap_overview").html(data);
     });
+
+    $.get( "/race_director/all_laps/8", function( data ) {
+      $("#lap10_overview").html(data);
+    });
+
 
     $.get( "/api/v1/info/last_scanned_token", function( data ) {
       $("#last_scanned_token").html(data);
