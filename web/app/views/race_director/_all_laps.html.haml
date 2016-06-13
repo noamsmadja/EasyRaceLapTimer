@@ -1,0 +1,33 @@
+%table.table
+  %thead
+    %tr
+      %th
+        Created
+      %th
+        Pilot
+      %th
+        Lap 
+      %th
+        Lap Time
+      %th
+        Invalidate
+
+  %tbody
+    - @alllaps.each do |lap_entry|
+      %tr{:class => ("invalidatedlap" if lap_entry.invalidated?)}
+        %td
+          %strong
+            = lap_entry.created_at.to_s(:long)
+        %td
+          %strong
+            = lap_entry.pilot.name
+        %td
+          %strong
+            = lap_entry.lap_num
+        %td
+          %strong
+            = formated_lap_time(lap_entry.lap_time)
+        %td
+          %strong
+            = link_to_if(lap_entry.invalidated?, t('actions.undo_invalidate_lap'),{action: 'undo_invalidate_lap', controller: '/race_director', lapid:lap_entry.id},{class: 'btn btn-danger btn-large'}) do
+              = link_to(t('actions.invalidate_lap'),{action: 'invalidate_lap', controller: '/race_director', lapid:lap_entry.id},{class: 'btn btn-danger btn-large'})
