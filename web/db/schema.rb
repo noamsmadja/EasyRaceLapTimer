@@ -33,6 +33,8 @@ ActiveRecord::Schema.define(version: 20160502142410) do
     t.datetime "deleted_at"
     t.boolean  "latest"
     t.boolean  "invalidated",     default: false
+    t.boolean  "splitted",        default: false
+
   end
 
   add_index "pilot_race_laps", ["deleted_at"], name: "index_pilot_race_laps_on_deleted_at"
