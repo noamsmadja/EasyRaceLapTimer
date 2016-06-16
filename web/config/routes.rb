@@ -12,6 +12,8 @@ Rails.application.routes.draw do
   get 'race_director/all_laps/:num' => 'race_director#all_laps'
   get 'race_director/invalidate_lap' => 'race_director#invalidate_lap'
   get 'race_director/undo_invalidate_lap' => 'race_director#undo_invalidate_lap'
+  get 'race_director/split_lap' => 'race_director#split_lap'
+  get 'race_director/undo_split_lap' => 'race_director#undo_split_lap'
 
   # You can have the root of your site routed with "root"
   get 'system' => 'system#index'
