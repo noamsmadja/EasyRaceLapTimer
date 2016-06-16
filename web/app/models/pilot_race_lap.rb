@@ -44,6 +44,16 @@ class PilotRaceLap < ActiveRecord::Base
   def undo_invalidated
     self.update_attribute(:invalidated,false)
   end
+  
+  def mark_splitted
+    self.update_attribute(:lap_time,self.lap_time/2)
+    self.update_attribute(:splitted,true)
+  end
+
+  def undo_splitted
+    self.update_attribute(:lap_time,self.lap_time*2)
+    self.update_attribute(:splitted,false)
+  end
 
   def to_json
     t = Hash.new
@@ -62,6 +72,7 @@ class PilotRaceLap < ActiveRecord::Base
     t[:race_session][:title] = self.race_session.title
     t[:race_session][:mode] = self.race_session.mode
     t[:invalidated] = self.invalidated;
+    t[:splitted] = self.split;
     return t
   end
 end
