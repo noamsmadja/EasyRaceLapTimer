@@ -58,6 +58,7 @@ class PilotRaceLap < ActiveRecord::Base
   def undo_splitted
     self.update_attribute(:lap_time,self.lap_time*2)
     self.update_attribute(:splitted,false)
+	PilotRaceLap.where(split_from: self.id).destroy
   end
 
   def to_json
