@@ -52,6 +52,7 @@ class PilotRaceLap < ActiveRecord::Base
     self.update_attribute(:splitted,true)
     @pilot = Pilot.find(self.pilot_id)
     prl = RaceSessionAdapter.new(self.race_session).track_lap_time(pilot.transponder_token,lap_time)
+	prl.update_attribute(split_from,self.id)
   end
 
   def undo_splitted

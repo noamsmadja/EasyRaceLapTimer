@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 20160502142410) do
     t.boolean  "latest"
     t.boolean  "invalidated",     default: false
     t.boolean  "splitted",        default: false
+	t.integer  "split_from"
 
   end
 
