@@ -52,13 +52,15 @@ class PilotRaceLap < ActiveRecord::Base
     self.update_attribute(:splitted,true)
     @pilot = Pilot.find(self.pilot_id)
     prl = RaceSessionAdapter.new(self.race_session).track_lap_time(pilot.transponder_token,lap_time)
-	prl.update_attribute(split_from,self.id)
+        PilotRaceLap.where(pilot_id: self.pilot_id).where(lap_time: self.lap_time).where(race_session_id: self.race_session_id).where.not(lap_num: self.lap_num).last.update_attribute(:split_from,self.id)
   end
 
   def undo_splitted
+    if PilotRaceLap.where(split_from: self.id).count > 0
+     PilotRaceLap.where(split_from: self.id).last.destroy
+    end
     self.update_attribute(:lap_time,self.lap_time*2)
     self.update_attribute(:splitted,false)
-	PilotRaceLap.where(split_from: self.id).destroy
   end
 
   def to_json
