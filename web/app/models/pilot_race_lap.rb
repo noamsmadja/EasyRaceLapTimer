@@ -80,7 +80,8 @@ class PilotRaceLap < ActiveRecord::Base
     t[:race_session][:title] = self.race_session.title
     t[:race_session][:mode] = self.race_session.mode
     t[:invalidated] = self.invalidated;
-    t[:splitted] = self.split;
+    t[:splitted] = self.splitted;
+    t[:split_from] = self.split_from;
     return t
   end
 end
